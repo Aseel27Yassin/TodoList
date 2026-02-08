@@ -1,0 +1,6 @@
+@MyTaskEFDBFirst_HostAddress = http://localhost:5012
+
+GET {{MyTaskEFDBFirst_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
