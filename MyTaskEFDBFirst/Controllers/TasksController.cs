@@ -18,6 +18,7 @@ namespace MyTaskEFDBFirst.Controllers
             _testdbContext = testdbContext;   
         }
 
+        //Create
         [HttpPost]
         [Route("add-task")]
         public async Task<IActionResult> Create([FromBody] CreateTaskInputDTO input)
@@ -52,7 +53,7 @@ namespace MyTaskEFDBFirst.Controllers
             }
         }
 
-
+        //Update
         [HttpPut("update-task")]
         public async Task<IActionResult> Update([FromBody] UpdateTaskInputDTO input)
         {
@@ -114,6 +115,28 @@ namespace MyTaskEFDBFirst.Controllers
             }
             
         }
+
+
+        //Get Task
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                var task = await _testdbContext.Tasks.FindAsync(id);
+
+                if(task == null)
+                {
+                    return NotFound($"No Task With The Given Id {id}");
+                }
+                return Ok(task);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500,ex.Message);
+            }
+        }
+
 
     }
 }
