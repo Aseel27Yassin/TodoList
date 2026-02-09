@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MyTaskEFDBFirst.DTOs.SignUps.Request;
 using MyTaskEFDBFirst.DTOs.Tasks.Request;
+using MyTaskEFDBFirst.DTOs.Tasks.Response;
 using MyTaskEFDBFirst.Models;
 using static MyTaskEFDBFirst.Helpers.Enums.MyTasksEnums;
 
@@ -134,6 +135,99 @@ namespace MyTaskEFDBFirst.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500,ex.Message);
+            }
+        }
+
+        //get all tasks
+        [HttpGet("tasks")]
+        public async Task<IActionResult> ListAll()
+        {
+            try
+             {
+                var items = _testdbContext.Tasks.ToList();
+                var list = new List<TaskDTO>();
+                foreach (var item in items)
+                        {
+                            list.Add(new TaskDTO
+                            {
+                                Id = item.Id,
+                                Title = item.Title,
+                                DeadLine = item.End.ToString(),
+                                Status = item.Status
+                            });
+                        }
+                    return Ok(list);
+                }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpGet("tasks-select")]
+        public async Task<IActionResult> ListAll2()
+        {
+            try
+            {
+                //creating object for every record I have
+                var items = _testdbContext.Tasks.Select(x => new TaskDTO
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    DeadLine = x.End.ToString(),
+                    Status = x.Status
+
+                }).ToList();
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        } 
+
+        [HttpGet("tasks-query")]
+        public async Task<IActionResult> ListAll3()
+        {
+            try
+            {
+                //sql background
+                //Select Id,Title,Status,End As DeadLine From Tasks
+                var items = from t in _testdbContext.Tasks
+                            select new TaskDTO
+                            {
+                                Id = t.Id,
+                                Title = t.Title,
+                                DeadLine = t.End.ToString(),
+                                Status = t.Status
+                            };
+                    return Ok(items.ToList());
+                }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpDelete("remove/{Id}")]
+        public async Task<IActionResult> Delete(int Id)
+        {
+            try
+            {
+                var task = _testdbContext.Tasks.Where(x => x.Id == Id).SingleOrDefault();
+                if (task != null)
+                {
+                   _testdbContext.Remove(task);
+                    _testdbContext.SaveChanges();
+                    return Ok("removed");
+                }
+                throw new Exception("No task exist with the selected Id");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
             }
         }
 

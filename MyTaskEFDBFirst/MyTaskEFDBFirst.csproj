@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="DTOs\SignUps\Response\" />
-    <Folder Include="DTOs\Tasks\Response\" />
   </ItemGroup>
 
 </Project>
