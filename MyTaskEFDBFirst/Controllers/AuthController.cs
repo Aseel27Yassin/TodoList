@@ -7,6 +7,7 @@ using MyTaskEFDBFirst.DTOs.SignIns.Response;
 using MyTaskEFDBFirst.DTOs.SignUps.Request;
 using MyTaskEFDBFirst.Models;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace MyTaskEFDBFirst.Controllers
 {
@@ -22,6 +23,19 @@ namespace MyTaskEFDBFirst.Controllers
         {
             context= testdbContext; //complete dependency injection
         }
+
+        //this is an XML code for swagger documentation :
+        /// <summary>
+        /// EndPoint to Create New Users
+        /// </summary>
+        /// <remarks>
+        /// Sample Request:
+        /// POST api/AddUser
+        /// {
+        /// "FirstName" : "Aseel",
+        /// "Email" : "Aseel27yassin@gmail.com";
+        /// }
+        /// </remarks>
 
         [HttpPost]
         [Route("[action]")]
@@ -64,6 +78,8 @@ namespace MyTaskEFDBFirst.Controllers
             }
             catch (Exception ex)
             {
+                Log.Error(ex.Message);
+                Log.Error(ex.StackTrace);
                 return StatusCode(500, $"An Error was Occured {ex.Message}");
             }
 

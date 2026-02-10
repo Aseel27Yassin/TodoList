@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyTaskEFDBFirst.DTOs.SignUps.Request;
 using MyTaskEFDBFirst.DTOs.Tasks.Request;
 using MyTaskEFDBFirst.DTOs.Tasks.Response;
+using MyTaskEFDBFirst.DTOs.Users.Response;
 using MyTaskEFDBFirst.Models;
 using static MyTaskEFDBFirst.Helpers.Enums.MyTasksEnums;
 
@@ -187,6 +188,7 @@ namespace MyTaskEFDBFirst.Controllers
             }
         } 
 
+
         [HttpGet("tasks-query")]
         public async Task<IActionResult> ListAll3()
         {
@@ -204,6 +206,79 @@ namespace MyTaskEFDBFirst.Controllers
                             };
                     return Ok(items.ToList());
                 }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpGet("list-user")]
+        public async Task<IActionResult> ListUsers()
+        {
+            try
+            {
+                var query = _testdbContext.Users.Select(x => new UserDTO
+                {
+                    Id = x.Id,
+                    Name = x.Name
+                }).ToList();
+                return Ok(query);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
+        [HttpGet("join-users")]
+        public async Task<IActionResult> TestJoin()
+        {
+            try
+            {
+                var users = _testdbContext.Users.ToList();
+                var tasks=_testdbContext.Tasks.ToList();
+
+                var joinQuery = from u in users
+                                join t in tasks on u.Id equals t.UserId
+                                select new //Annoynmous Object
+                                {
+                                    User= u,
+                                    MyTask=t
+                                };
+                var test = joinQuery.ToList();
+                foreach(var item in joinQuery)
+                {
+                    Console.WriteLine(item.MyTask.Id);
+                }
+                return Ok(test);
+            }
+            catch(Exception ex) 
+            {
+                return StatusCode(500,ex.Message);
+            }
+        }
+
+
+        [HttpGet("join-users-2")]
+        public async Task<IActionResult> TestJoinFromDb()
+        {
+            try
+            {
+               
+                var joinQuery = from u in _testdbContext.Users
+                                join t in _testdbContext.Tasks on u.Id equals t.UserId
+                                select new //Annoynmous Object
+                                {
+                                    Id=t.Id,
+                                    Username=u.Name,
+                                    Title=t.Title,
+                                    DeadLine=t.End.ToString(),
+                                    Status=t.Status
+                                };
+                return Ok(joinQuery.ToList());
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
